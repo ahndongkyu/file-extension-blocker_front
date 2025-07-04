@@ -1,3 +1,4 @@
+/* 모달 배경 */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -11,23 +12,30 @@
   z-index: 999;
 }
 
+/* 모달 내용 */
 .modal-content {
   background: white;
-  width: 500px;
-  max-height: 80vh;
+  width: 550px;
+  max-height: 90vh;
   overflow-y: auto;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  min-height: 400px;
+  position: relative;
 }
 
+/* 모달 버튼 */
 .modal-buttons {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  margin-top: 16px;
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
 }
 
+/* 업로드 로그 테이블 */
 .log-table {
   width: 100%;
   border-collapse: collapse;
@@ -35,6 +43,7 @@
   font-size: 14px;
 }
 
+/* 테이블 헤더 및 셀 공통 스타일 */
 .log-table th,
 .log-table td {
   border: 1px solid #ccc;
@@ -43,6 +52,34 @@
   word-break: break-all;
 }
 
+/* 테이블 헤더 배경색 */
 .log-table th {
   background-color: #f5f5f5;
+}
+
+/* 페이지네이션 버튼 컨테이너 */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  position: absolute;
+  bottom: 50px;
+  left: 0;
+  width: 100%;
+}
+
+/* 페이지네이션 버튼 */
+.pagination button {
+  background-color: #eee;
+  border: 1px solid #ccc;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* 페이지네이션 버튼 강조 */
+.pagination button.active {
+  background-color: #87cefa;
+  font-weight: bold;
 }

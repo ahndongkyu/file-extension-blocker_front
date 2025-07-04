@@ -11,7 +11,7 @@ function Modal({ onClose, children }) {
         {children}
       </div>
     </div>,
-    document.getElementById('modal-root') // ← index.html에 추가한 div
+    document.getElementById('modal-root')
   );
 }
 

@@ -1,3 +1,4 @@
+/* 컨테이너 */
 .app-container {
   font-family: 'Arial', sans-serif;
   max-width: 600px;
@@ -8,21 +9,25 @@
   background-color: #fafafa;
 }
 
+/* 메인 제목 */
 h2 {
   margin-bottom: 50px;
   font-size: 26px;
 }
 
+/* 일반 텍스트 문단 */
 p {
   font-size: 16px;
   color: #555;
   margin-bottom: 10px;
 }
 
+/* 각 섹션 */
 .section {
   margin-bottom: 30px;
 }
 
+/* 섹션의 라벨 */
 .label {
   display: block;
   font-weight: bold;
@@ -30,6 +35,7 @@ p {
   font-size: 18px;
 }
 
+/* 고정 확장자 체크박스 */
 .fixed-list {
   display: flex;
   flex-wrap: wrap;
@@ -37,32 +43,36 @@ p {
   margin-bottom: 10px;
 }
 
+/* 체크박스 */
 .checkbox {
   display: flex;
   align-items: center;
   gap: 2px;
 }
 
+/* 커스텀 확장자 */
 .custom-input-wrap {
   display: flex;
   gap: 10px;
   margin-bottom: 10px;
 }
 
+/* 입력창 */
 .custom-input-wrap input {
-  flex: 1;
+  width: 200px;
   padding: 6px 12px;
   font-size: 12px;
 }
 
+/* 추가 버튼 */
 .custom-input-wrap button {
   padding: 6px 12px;
   background-color: #ddd;
   border: 1px solid #555;
-  border-radius: 2px;
   cursor: pointer;
 }
 
+/* 커스텀 확장자 태그 스타일 */
 .tag {
   background-color: #e0e0e0;
   padding: 4px 8px;
@@ -73,6 +83,7 @@ p {
   font-size: 14px;
 }
 
+/* 태그 내 삭제 버튼 */
 .tag button {
   background: none;
   border: none;
@@ -80,21 +91,7 @@ p {
   cursor: pointer;
 }
 
-.submit-wrap {
-  text-align: right;
-  margin-top: 20px;
-}
-
-.submit-btn {
-  padding: 10px 20px;
-  font-weight: bold;
-  background-color: #1e90ff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
+/* 커스텀 태그 전체 영역 */
 .custom-tags {
   display: flex;
   flex-wrap: wrap;
@@ -102,6 +99,7 @@ p {
   margin-top: 10px;
 }
 
+/* 상단 안내 메시지 스타일 */
 .message {
   background-color: #f0f9ff;
   border: 1px solid #87cefa;
@@ -112,17 +110,20 @@ p {
   font-size: 14px;
 }
 
+/* 안내 메시지 공간 확보용 빈 영역 */
 .message-placeholder {
   height: 40px;
   margin-bottom: 20px;
 }
 
+/* 업로드 파일 리스트 컨테이너 */
 .upload-list {
   margin-top: 10px;
   list-style: none;
   padding: 0;
 }
 
+/* 개별 업로드된 파일 항목 */
 .upload-list li {
   display: flex;
   justify-content: space-between;
@@ -130,9 +131,11 @@ p {
   background: #eee;
   margin-bottom: 6px;
   padding: 6px 12px;
-  border-radius: 6px;
+  border-radius: 3px;
+  font-size: 12px;
 }
 
+/* 파일 삭제 버튼 */
 .upload-list button {
   background: none;
   border: none;

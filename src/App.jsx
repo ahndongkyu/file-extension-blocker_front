@@ -14,12 +14,15 @@ function App() {
   const [isLogModalOpen, setIsLogModalOpen] = useState(false);
   const fileInputRef = useRef();
 
-  // 파일명 길이 제한
+  const [currentPage, setCurrentPage] = useState(1);
+  const logsPerPage = 7;
+
+  // 파일명 길이 줄임
   const shortenFilename = (name, max = 30) => {
     return name.length > max ? `${name.slice(0, max)}...` : name;
   };
 
-  // 시간 포맷팅
+  // 업로드 로그의 시간 정보를 YY.MM.DD HH:MM 형식으로 변환
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
     const yy = String(date.getFullYear()).slice(2);
@@ -30,7 +33,7 @@ function App() {
     return `${yy}.${mm}.${dd} ${hh}:${mi}`;
   };
 
-  // 초기 확장자 목록
+  // 서버에서 고정/커스텀 확장자 목록 불러오기
   useEffect(() => {
     axios
       .get(`${process.env.REACT_APP_API_URL}/extensions`)
@@ -47,7 +50,7 @@ function App() {
       .catch((err) => console.error('확장자 불러오기 실패:', err));
   }, []);
 
-  // 저장된 로그 불러오기
+  // 로컬스토리지에서 이전 업로드 로그 불러오기
   useEffect(() => {
     const savedLogs = localStorage.getItem('uploadLogs');
     if (savedLogs) {
@@ -55,12 +58,12 @@ function App() {
     }
   }, []);
 
-  // 로그 변경 시 저장
+  // 업로드 로그 변경 시 로컬스토리지에 저장
   useEffect(() => {
     localStorage.setItem('uploadLogs', JSON.stringify(uploadLogs));
   }, [uploadLogs]);
 
-  // 고정 확장자 체크박스 상태 업데이트
+  // 고정 확장자 상태 업데이트
   const handleCheckboxChange = (ext) => {
     const updated = selectedFixed.includes(ext)
       ? selectedFixed.filter((e) => e !== ext)
@@ -110,6 +113,8 @@ function App() {
       .then(() => {
         setCustomTags((prev) => [...prev, trimmed]);
         setCustomInput('');
+        setMessage(`"${trimmed}" 확장자 추가됨.`);
+        setTimeout(() => setMessage(''), 3000);
       })
       .catch(() => {
         alert('커스텀 확장자 추가 실패');
@@ -122,11 +127,13 @@ function App() {
       .delete(`${process.env.REACT_APP_API_URL}/extensions/custom/${ext}`)
       .then(() => {
         setCustomTags((prev) => prev.filter((e) => e !== ext));
+        setMessage(`"${ext}" 확장자 삭제됨.`);
+        setTimeout(() => setMessage(''), 3000);
       })
       .catch(() => console.error('커스텀 삭제 실패'));
   };
 
-  // 업로드 파일 변경 시 실행
+  // 파일 업로드 시 확장자 검사 및 업로드 허용 여부 판단, 로그 기록
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
     const newLogs = [];
@@ -151,30 +158,28 @@ function App() {
       return true;
     });
 
-    if (newLogs.length > 0) setUploadLogs((prev) => [...prev, ...newLogs]);
+    if (newLogs.length > 0) setUploadLogs((prev) => [...newLogs, ...prev]); // 최신 로그를 앞에 추가
     if (filtered.length === 0) return;
     setUploadedFiles((prev) => [...prev, ...filtered]);
   };
 
-  // 업로드 파일 삭제
+  // 업로드된 파일 목록에서 파일 제거
   const handleRemoveFile = (index) => {
     setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // 로그 초기화
+  // 업로드 로그 전체 초기화 및 로컬스토리지 초기화
   const clearLogs = () => {
     setUploadLogs([]);
     localStorage.removeItem('uploadLogs');
   };
 
-  // 전송 버튼 (현재 콘솔 출력)
-  const handleSubmit = () => {
-    const payload = {
-      fixed: selectedFixed,
-      custom: customTags,
-    };
-    console.log('전송할 데이터:', payload);
-  };
+  // 페이지네이션
+  const totalPages = Math.ceil(uploadLogs.length / logsPerPage);
+  const currentLogs = uploadLogs.slice(
+    (currentPage - 1) * logsPerPage,
+    currentPage * logsPerPage
+  );
 
   return (
     <div className='app-container'>
@@ -253,7 +258,10 @@ function App() {
       <div className='section'>
         <h3
           style={{ cursor: 'pointer', textDecoration: 'underline' }}
-          onClick={() => setIsLogModalOpen(true)}
+          onClick={() => {
+            setCurrentPage(1);
+            setIsLogModalOpen(true);
+          }}
         >
           업로드 시도 로그 보기
         </h3>
@@ -267,26 +275,39 @@ function App() {
             {uploadLogs.length === 0 ? (
               <p>로그가 없습니다.</p>
             ) : (
-              <table className='log-table'>
-                <thead>
-                  <tr>
-                    <th>파일명</th>
-                    <th>확장자</th>
-                    <th>차단 여부</th>
-                    <th>시간</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {uploadLogs.map((log, idx) => (
-                    <tr key={idx}>
-                      <td>{shortenFilename(log.filename)}</td>
-                      <td>.{log.extension}</td>
-                      <td>{log.blocked ? '차단' : '허용'}</td>
-                      <td>{formatDate(log.timestamp)}</td>
+              <>
+                <table className='log-table'>
+                  <thead>
+                    <tr>
+                      <th>파일명</th>
+                      <th>확장자</th>
+                      <th>차단 여부</th>
+                      <th>시간</th>
                     </tr>
+                  </thead>
+                  <tbody>
+                    {currentLogs.map((log, idx) => (
+                      <tr key={idx}>
+                        <td>{shortenFilename(log.filename)}</td>
+                        <td>.{log.extension}</td>
+                        <td>{log.blocked ? '차단' : '허용'}</td>
+                        <td>{formatDate(log.timestamp)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className='pagination'>
+                  {Array.from({ length: totalPages }, (_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentPage(i + 1)}
+                      className={currentPage === i + 1 ? 'active' : ''}
+                    >
+                      {i + 1}
+                    </button>
                   ))}
-                </tbody>
-              </table>
+                </div>
+              </>
             )}
             <div className='modal-buttons'>
               <button onClick={clearLogs}>로그 초기화</button>
@@ -295,13 +316,6 @@ function App() {
           </div>
         </div>
       )}
-
-      {/* 전송 버튼 */}
-      <div className='submit-wrap'>
-        <button className='submit-btn' onClick={handleSubmit}>
-          전송
-        </button>
-      </div>
     </div>
   );
 }
